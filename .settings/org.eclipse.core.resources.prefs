@@ -1,0 +1,12 @@
+eclipse.preferences.version=1
+encoding//src/exp/CleanData.py=utf-8
+encoding//src/exp/DistanceCalculate.py=utf-8
+encoding//src/exp/Evaluate.py=utf-8
+encoding//src/exp/FirstPhase.py=utf-8
+encoding//src/exp/SecondPhase.py=utf-8
+encoding//src/exp/Util.py=utf-8
+encoding//src/exp/Visualization.py=utf-8
+encoding//src/exp/exp.py=utf-8
+encoding//src/exp/single_GMM_Hmm.py=utf-8
+encoding//src/test/GetScore.py=utf-8
+encoding//src/test/Test.py=utf-8
