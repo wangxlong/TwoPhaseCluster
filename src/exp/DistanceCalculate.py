@@ -73,7 +73,83 @@ class DistanceFunction():
             for j in range(n):
                 dismat[i,j]=((data[i]-data[j])*(data[i]-data[j])).sum().sum()
             
-        return  dismat  
+        return  dismat
+    
+    def pcaComponetCompute(self,weightlist,percent):
+        #计算平均weight
+        sumweight=np.zeros((len(weightlist[0])))
+        print "weightlist:",weightlist
+       
+        for i in range(len(weightlist)):
+            print "dtype:",len(weightlist[i])
+            sumweight=sumweight+weightlist[i]
+        sumweight=sumweight/len(weightlist)
+        
+        count=0
+        for i in range(len(sumweight)):
+            count=count+sumweight[i]
+        print "count:",count
+        
+        #计算component
+        sumpercent=0
+        percentValue=percent/100
+        for i in range(len(sumweight)):
+            sumpercent=sumpercent+sumweight[i]
+            if sumpercent>=percentValue:
+                return i+1
+           
+    
+    def pcaEuclidean(self,pcadatalist,weightlist,component):
+        sumweight=np.zeros((len(weightlist[0])))
+#         print "weightlist:",weightlist
+        for i in range(len(weightlist)):
+#             print "dtype:",len(weightlist[i])
+            sumweight=sumweight+weightlist[i]
+        sumweight=sumweight/len(weightlist)
+        #验证小于1
+#         count=0
+#         for i in range(len(sumweight)):
+#             count=count+sumweight[i]
+#         print "count:",count
+#         print "pcadatalist:",pcadatalist
+#         print component
+        n=len(pcadatalist)
+        dismat=mat(zeros((n,n)))
+        for i in range(n):
+            for j in range(n):
+#                 print "j is:",pcadatalist[j]
+                tmpmatrix=(pcadatalist[i]-pcadatalist[j])*(pcadatalist[i]-pcadatalist[j])
+#                 print tmpmatrix
+#                 print len(tmpmatrix)
+#                 print len(tmpmatrix[0]) 
+                tmpsum=0             
+                for k in range(len(tmpmatrix)):
+                    tmpsum=tmpsum+(tmpmatrix[k]*sumweight).sum()
+                
+                dismat[i,j]=tmpsum                 
+                
+        return  dismat
+        
+        
+    def pcaCosion(self,pcadatalist,weightlist,component):
+        sumweight=np.zeros((len(weightlist[0])))
+#         print "weightlist:",weightlist
+        for i in range(len(weightlist)):
+#             print "dtype:",len(weightlist[i])
+            sumweight=sumweight+weightlist[i]
+        sumweight=sumweight/len(weightlist)
+
+        n=len(pcadatalist)
+        dismat=mat(zeros((n,n)))
+        for i in range(n):
+            for j in range(n):
+                tmpsum=0             
+                for k in range(component):
+                    tmpsum=tmpsum+dot(pcadatalist[i][:,k],pcadatalist[j][:,k])/(linalg.norm(pcadatalist[i][:,k])*linalg.norm(pcadatalist[j][:,k]))*sumweight[k]      
+                dismat[i,j]=1-abs(tmpsum)                
+                
+        return  dismat
+        
             
             
             

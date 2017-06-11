@@ -8,5 +8,6 @@ encoding//src/exp/Util.py=utf-8
 encoding//src/exp/Visualization.py=utf-8
 encoding//src/exp/exp.py=utf-8
 encoding//src/exp/single_GMM_Hmm.py=utf-8
+encoding//src/test/ClusterTest.py=utf-8
 encoding//src/test/GetScore.py=utf-8
 encoding//src/test/Test.py=utf-8

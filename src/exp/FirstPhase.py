@@ -124,14 +124,14 @@ class PAA():
      
     '''
     
-    def readFileToDf(self,path):#path='dealeddata/'
+    def readFileToDf(self,path,features):#path='dealeddata/'
         '读取文件，每个文件封装为一个df，返回df集合'
         a = [] 
         fileList=Util.readAllFileNameFromDir(path)
         individul=[]
         for i in range(len(fileList)):
             df=pd.read_excel(path+fileList[i],encoding = 'utf-8')
-            a.append(df)
+            a.append(df[features])
             individul.append(fileList[i][:-4])
         return a,individul
     
@@ -174,9 +174,9 @@ class PAA():
             n = n+1
         return ave_
        
-    def paa(self,path,factors):#path='dealeddata/'
+    def paa(self,path,factors,features):#path='dealeddata/'
         
-        a_,individul=self.readFileToDf(path)
+        a_,individul=self.readFileToDf(path,features)
         '''k代表第几个参数值'''
         global k 
         k = 0
@@ -240,23 +240,27 @@ class FirstPhaseFunction:
         final_hidden_states=s_gmm_hmm.getFinalState(globalstatenumber,X,pa,transport,mean,conv)
         return final_hidden_states
     
-    def paadeal(self,path,piecewise):
+    def paadeal(self,path,piecewise,features):
         'paa处理'
         pAA=PAA()
-        data,individul=pAA.paa(path, piecewise)
+        data,individul=pAA.paa(path, piecewise,features)
+        for i in range(len(data)):
+            data[i]=data[i][features[:-1]]   
         return data,individul
     
-    def pcadeal(self,data,individul):
+    def pcadeal(self,data,component):
         'pca 处理,data-dataframe数据集合,返回pca处理后的学生数据列表、对应的权重列表以及个体标识 '
-        pcadata=[]
+        pcadatalist=[]
         weightlist=[]
+        standardScaler=StandardScaler()
         for i in range(len(data)):
-            pca=PCA()
-            dealdata=pca.fit_transform(data[i])
+            onedata=standardScaler.fit_transform(data[i])
+            pca=PCA(random_state=1,n_components=component)
+            dealdata=pca.fit_transform(onedata)
             weightlist.append(pca.explained_variance_ratio_)
-            pcadata.append(dealdata)
+            pcadatalist.append(dealdata)
         
-        return pcadata,weightlist,individul
+        return pcadatalist,weightlist
             
         
 if __name__=='__main__':

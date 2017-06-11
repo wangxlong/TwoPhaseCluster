@@ -56,15 +56,29 @@ class ClusterExpeiment():
         self.secondPhaseFunction=SecondPhaseFunction()
         self.distanceFunction=DistanceFunction()
         
-    def onecase(self,path,piecewise):
-        '方案一，paa＋层次'
-        data,individul=self.firstPhaseFunction.paadeal(path, piecewise)#paa 处理，返回的是dataframe list
-        dismat=self.distanceFunction.euclidean(data) # 得到距离矩阵
-        
+    def onecase(self,path,piecewise,features):
+        '方案一，paa＋欧式距离+层次'
+        data,individul=self.firstPhaseFunction.paadeal(path, piecewise,features)#paa 处理，返回的是dataframe list
+        dismat=self.distanceFunction.euclidean(data) # 得到距离矩阵  
         self.secondPhaseFunction.hieracy(dismat, individul, 'average','paa')#层次聚类
     
-    def twocase(self):
-        '方案二，paa＋pca＋层次'
+    def twocase(self,path,piecewise,features,component):
+        '方案二，paa＋pca+欧式距离＋层次'
+        data,individul=self.firstPhaseFunction.paadeal(path, piecewise,features)#paa 处理，返回的是dataframe list
+#         print "data",data[1]
+#         print len(data)
+        pcadatalist,weightlist=self.firstPhaseFunction.pcadeal(data,component)
+        dismat=self.distanceFunction.pcaEuclidean(pcadatalist, weightlist, component)# 得到距离矩阵 
+        self.secondPhaseFunction.hieracy(dismat, individul, 'average','paa-pca-ed')#层次聚类
+
+        
+    def two1case(self,path,piecewise,features,component):
+        '方案二1，paa＋pca+余弦距离＋层次'
+        data,individul=self.firstPhaseFunction.paadeal(path, piecewise,features)#paa 处理，返回的是dataframe list
+        pcadatalist,weightlist=self.firstPhaseFunction.pcadeal(data,component)
+        dismat=self.distanceFunction.pcaCosion(pcadatalist, weightlist, component)# 得到距离矩阵
+        self.secondPhaseFunction.hieracy(dismat, individul, 'average','paa-pca-cos')#层次聚类
+        
     
     def threecase(self,X):
         '方案三，fcmeans＋层次' 
@@ -107,14 +121,15 @@ class ClusterExpeiment():
     
 if __name__=='__main__':
     print 'run'
+    
+    #数据准备阶段
 #     features=['Rf','VT','VE','VO2','VCO2','O2exp','CO2exp','VO2/Kg','R','HR','FetO2','FetCO2','Ti','Te','Ttot','Ti/Ttot',
 #               'IV','PetO2','PetCO2','PaCO2','PAO2','VD(phys)','VD/VT','EEm','EEbsa','EEkg','npRQ','t Rel',
 #               'METS','Qt','SV','predVO2','BR','EEtot']#特征列表
     features=['Rf','VCO2','VO2/Kg','R','EEkg','npRQ','METS','BR']#特征列表
     dataPath='../cleaneddata/'
     allSeries=Util.allIndivdualToOneSeries(dataPath, features)#将所有的序列合为一起
-    allSeries=np.array(allSeries)
-    
+    allSeries=np.array(allSeries)   
     #归一化
     standardScaler=StandardScaler()
     standardallSeries=standardScaler.fit_transform(allSeries)
@@ -145,10 +160,13 @@ if __name__=='__main__':
     print 'GMM-hmm spi_value:',evaluationfunction.spivalue(allSeries, label, globalstatenumber)
     
     #实验二，聚类结果
-    
+    paafeatures=['Rf','VCO2','VO2/Kg','R','EEkg','npRQ','METS','BR','Speed']#特征列表
     clusterExpeiment=ClusterExpeiment()
     
-    clusterExpeiment.onecase('../cleaneddata/',[1,1,1,1,1,1,1,1,1])
+    clusterExpeiment.onecase('../cleaneddata/',[1,1,1,1,1,1,1,1,1],paafeatures)
+    clusterExpeiment.twocase('../cleaneddata/',[1,1,1,1,1,1,1,1,1],paafeatures,3)
+    
+    clusterExpeiment.two1case('../cleaneddata/',[1,1,1,1,1,1,1,1,1],paafeatures,3)
 #     clusterExpeiment.threecase(standardallSeries)
     clusterExpeiment.fourcase(standardallSeries)
     clusterExpeiment.fivecase(standardallSeries)
