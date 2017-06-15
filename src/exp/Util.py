@@ -42,7 +42,7 @@ class Util:
         for i in range(len(fileList)):
             data=pd.read_excel(dataPath+fileList[i])
             data=data.loc[:,featurelist]#取所需要的特征
-            print len(data)
+            print len(data),"  ",fileList[i]
 #             print fileList[i].decode('utf-8')
             labelDic[fileList[i]]=len(data)
             firstPhaseInputData=firstPhaseInputData.append(data,ignore_index=True)
